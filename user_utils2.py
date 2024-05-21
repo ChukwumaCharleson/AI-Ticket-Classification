@@ -1,33 +1,18 @@
 from langchain.embeddings.sentence_transformer import SentenceTransformerEmbeddings
-#from langchain.llms import OpenAI #This import has been replaced by the below one :)
-from langchain_openai import OpenAI
-from langchain.chains.question_answering import load_qa_chain
-#from langchain.callbacks import get_openai_callback #This import has been replaced by the below one :)
-from langchain_community.callbacks import get_openai_callback
 from langchain_community.llms import HuggingFaceEndpoint
-from langchain import hub
-from langchain_core.output_parsers import StrOutputParser
-from langchain_core.runnables import RunnablePassthrough
-from langchain.chains import RetrievalQA
-import joblib
-from pages.admin_utils2 import *
 from langchain.schema.messages import HumanMessage as hm, SystemMessage, AIMessage
-from transformers import pipeline
-from langchain.llms import HuggingFacePipeline
 from langchain.prompts.prompt import PromptTemplate
-from langchain_core.prompts.chat import ChatPromptTemplate
-from langchain.schema import format_document
-from langchain_core.messages import AIMessage, HumanMessage, get_buffer_string
-from langchain_core.runnables import RunnableParallel
 from langchain_core.runnables import RunnableLambda, RunnablePassthrough
 from langchain.memory import ConversationBufferMemory
-from operator import itemgetter
-from dotenv import load_dotenv
 from langchain.chains import ConversationalRetrievalChain
+from pages.admin_utils2 import *
+import joblib
 
 
 def create_embedding():
+    print("Creating embedding")
     embeddings = SentenceTransformerEmbeddings(model_name="all-MiniLM-L6-v2")
+    print("Embedding created")
     return embeddings
 
 def define_rag_chain():
@@ -100,7 +85,6 @@ def define_rag_chain():
     )
 
     return conversational_chain
-
 
 
 def get_answer(user_input, rag_chain, chat_history):    
