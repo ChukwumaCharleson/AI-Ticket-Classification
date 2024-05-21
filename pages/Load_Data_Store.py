@@ -1,12 +1,11 @@
 import streamlit as st
 from dotenv import load_dotenv
-from pages.admin_utils2 import *
+from admin_utils import *
 
 
 def main():
     global retriever
     load_dotenv()
-    st.set_page_config(page_title="Dump PDF to Pinecone - Vector Store")
     st.title("Please upload your files...📁 ")
 
     # Upload the pdf file...
