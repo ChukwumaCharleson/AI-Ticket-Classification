@@ -1,4 +1,3 @@
-import bs4
 from pypdf import PdfReader
 from langchain.embeddings.sentence_transformer import SentenceTransformerEmbeddings
 from langchain.chains import create_history_aware_retriever, create_retrieval_chain
