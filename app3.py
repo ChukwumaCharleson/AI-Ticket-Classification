@@ -45,6 +45,7 @@ def main():
             with st.spinner(text="Thinking..."):
                   
                     assistant_response = get_answer(user_input, rag_chain, input_chat_history)
+                    print(assistant_response)
                     message_placeholder.write(assistant_response)
 
         # Add assistant response to chat history            
