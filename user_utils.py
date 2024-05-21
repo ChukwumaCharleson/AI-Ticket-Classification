@@ -14,6 +14,7 @@ from langchain_core.messages import HumanMessage
 from langchain_community.llms import Ollama
 import joblib
 from pages.admin_utils2 import *
+from langchain.schema.messages import HumanMessage as hm, SystemMessage, AIMessage
 
 
 
@@ -31,9 +32,22 @@ def define_rag_chain():
 
     ### Contextualize question ###
     contextualize_q_system_prompt = """Given a chat history and the latest user question \
-    which might reference context in the chat history, formulate a standalone question \
+    which might reference context in the chat history, formulate a standalone single question \
     which can be understood without the chat history. Do NOT answer the question, \
-    just reformulate it if needed and otherwise return it as is."""
+    just reformulate it if needed and otherwise return it as is. \
+    
+    
+    For example:
+
+    If user asks: does the HR document contain?
+    and you respond: It dontains details about the HR policy of the company
+
+    and then the user asks again: What does it say in it's conclusion?
+
+    Your resulting standalone question would be: What does the HR policy say in the conclusion of the HR policy?
+
+    """
+
     contextualize_q_prompt = ChatPromptTemplate.from_messages(
         [
             ("system", contextualize_q_system_prompt),
@@ -47,6 +61,8 @@ def define_rag_chain():
     qa_system_prompt = """You are an assistant for question-answering tasks. \
     Use the following pieces of retrieved context to answer the question. \
     If you don't know the answer, just say that you don't know. \
+    Do not attempt to complete the question to provide additional information \
+    Your answers MUST be straight to the point and address only what was asked. 
   
 
     {context}"""
@@ -93,6 +109,31 @@ def get_answer(user_input, rag_chain, chat_history):
     #chat_history.extend([HumanMessage(content=user_input), ai_msg["answer"]])
     return ai_msg
 
+
+def convert_message(m):
+    if m["role"] == "user":
+        return hm(content=m["content"])
+    elif m["role"] == "assistant":
+        return AIMessage(content=m["content"])
+    elif m["role"] == "system":
+        return SystemMessage(content=m["content"])
+    else:
+        raise ValueError(f"Unknown role {m['role']}")
+
+
+
+def _format_chat_history(chat_history):
+    def format_single_chat_message(m):
+        if type(m) is hm:
+            return "Human: " + m.content
+        elif type(m) is AIMessage:
+            return "Assistant: " + m.content
+        elif type(m) is SystemMessage:
+            return "System: " + m.content
+        else:
+            raise ValueError(f"Unknown role {m['role']}")
+
+    return "\n".join([format_single_chat_message(m) for m in chat_history])
 
 
 def predict(query_result):

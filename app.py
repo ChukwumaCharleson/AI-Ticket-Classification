@@ -14,8 +14,8 @@ if 'Transport_tickets' not in st.session_state:
 
 def main():
     load_dotenv()
-    os.environ["HUGGINGFACEHUB_API_TOKEN"]
-    os.environ["ANTHROPIC_API_KEY"]
+    #os.environ["HUGGINGFACEHUB_API_TOKEN"]
+    #os.environ["ANTHROPIC_API_KEY"]
 
     st.header("AI Assistant and Ticket Classification Tool")
     #Capture user input
