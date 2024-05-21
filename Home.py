@@ -2,7 +2,10 @@ from dotenv import load_dotenv
 import streamlit as st
 import os
 from user_utils import *
-
+__import__('pysqlite3')
+import sys
+import sqlite3
+sys.modules['sqlite3'] = sys.modules.pop('pysqlite3')
 
 #Creating session variables
 if 'HR_tickets' not in st.session_state:
