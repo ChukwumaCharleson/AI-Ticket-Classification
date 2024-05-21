@@ -1,6 +1,6 @@
 # AI-Ticket-Classification
 
-This Chatbot application is designed to streamline information retrieval from PDF documents and provide efficient departmental routing for user inquiries. Leveraging Python, Huggingface models, Langchain, Chroma DB, and SVM ML model, our solution offers a comprehensive toolset for document analysis and department prediction.
+This Chatbot application is designed to streamline information retrieval from PDF documents and provide efficient departmental routing for user inquiries. Leveraging Python, Huggingface models, Langchain, Chroma DB, and SVM ML model, this solution a basic framework for document analysis and department prediction.
 
 ## Features
 
