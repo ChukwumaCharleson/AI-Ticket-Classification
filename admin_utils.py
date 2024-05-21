@@ -13,6 +13,10 @@ from langchain_text_splitters import RecursiveCharacterTextSplitter
 from langchain import HuggingFaceHub
 import pandas as pd
 from sklearn.model_selection import train_test_split
+__import__('pysqlite3')
+import sys
+import sqlite3
+sys.modules['sqlite3'] = sys.modules.pop('pysqlite3')
 
 #********* Chroma related Functions************
 
