@@ -3,7 +3,6 @@ import streamlit as st
 import os
 from user_utils2 import *
 
-
 #Creating session variables
 if 'HR_tickets' not in st.session_state:
     st.session_state['HR_tickets'] =[]
@@ -14,9 +13,7 @@ if 'Transport_tickets' not in st.session_state:
 
 
 def main():
-    rag_chain = define_rag_chain()
     load_dotenv()
-    input_chat_history = []
 
     st.title("AI Assistant and Ticket Classification Tool")
     st.write("By Chukwuma Charleson Onwuka")
@@ -31,6 +28,8 @@ def main():
     #Capture user input
     
     user_input = st.chat_input("Enter your message...")
+    rag_chain = define_rag_chain()
+    input_chat_history = []
 
     if user_input:
         st.session_state.messages.append({"role": "user", "content": user_input})
@@ -45,11 +44,16 @@ def main():
 
             with st.spinner(text="Thinking..."):
                   
-                    assistant_response = get_answer(user_input, rag_chain)
-                    print(assistant_response)
+                    assistant_response = get_answer(user_input, rag_chain, input_chat_history)
                     message_placeholder.write(assistant_response)
-                    #message_placeholder.write(assistant_response)
 
+        # Add assistant response to chat history            
+        st.session_state.messages.append(
+            {
+                "role": "assistant",
+                "content": assistant_response,
+            }
+        )
         #Button to create a ticket with respective department
         button = st.button("Submit ticket?")
 

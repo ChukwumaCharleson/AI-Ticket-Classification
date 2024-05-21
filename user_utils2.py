@@ -1,7 +1,3 @@
-#Pinecone team has been making a lot of changes to there code and here is how it should be used going forward :)
-from pinecone import Pinecone as PineconeClient
-#from langchain.vectorstores import Pinecone     #This import has been replaced by the below one :)
-from langchain_community.vectorstores import Pinecone
 from langchain.embeddings.sentence_transformer import SentenceTransformerEmbeddings
 #from langchain.llms import OpenAI #This import has been replaced by the below one :)
 from langchain_openai import OpenAI
@@ -35,7 +31,6 @@ def create_embedding():
     return embeddings
 
 def define_rag_chain():
-    load_dotenv()
     model_name = "mistralai/Mistral-7B-Instruct-v0.2"
     vectorstore = Chroma(persist_directory='db', embedding_function=SentenceTransformerEmbeddings(model_name="all-MiniLM-L6-v2"))
     retriever = get_retriever(vectorstore)
@@ -108,10 +103,13 @@ def define_rag_chain():
 
 
 
-def get_answer(user_input, rag_chain):    
+def get_answer(user_input, rag_chain, chat_history):    
     ### Manage chat history ###
     
-    ai_msg = rag_chain({"question": user_input})
+    ai_msg = rag_chain.invoke({"question": user_input},
+    config={
+        "configurable": {"session_id": "abc123"}
+    })
     ai_msg = ai_msg["answer"]
     return ai_msg
 
