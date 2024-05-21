@@ -1,5 +1,6 @@
 from dotenv import load_dotenv
 import streamlit as st
+import os
 from user_utils import *
 
 #Creating session variables
@@ -13,38 +14,30 @@ if 'Transport_tickets' not in st.session_state:
 
 def main():
     load_dotenv()
+    os.environ["HUGGINGFACEHUB_API_TOKEN"]
+    os.environ["ANTHROPIC_API_KEY"]
 
-    st.header("Automatic Ticket Classification Tool")
+    st.header("AI Assistant and Ticket Classification Tool")
     #Capture user input
     st.write("We are here to help you, please ask your question:")
     user_input = st.text_input("🔍")
+    rag_chain = define_rag_chain()
+    input_chat_history = []
 
     if user_input:
 
-        #creating embeddings instance...
-        embeddings=create_embeddings()
-
-        #Function to pull index data from Pinecone
-        import os
-        #We are fetching the previously stored Pinecome environment variable key in "Load_Data_Store.py" file
-        index=pull_from_pinecone("23c46bcc-fd75-4d0f-aad9-5bfb5117d65c","us-east-1","tickets",embeddings)
-        
-        #This function will help us in fetching the top relevent documents from our vector store - Pinecone Index
-        relavant_docs=get_similar_docs(index,user_input)
-
         #This will return the fine tuned response by LLM
-        response=get_answer(relavant_docs,user_input)
+        response= get_answer(user_input, rag_chain, input_chat_history)
+        #input_chat_history = new_history
         st.write(response)
 
-        
         #Button to create a ticket with respective department
         button = st.button("Submit ticket?")
 
         if button:
             #Get Response
             
-
-            embeddings = create_embeddings()
+            embeddings = create_embedding()
             query_result = embeddings.embed_query(user_input)
 
             #loading the ML model, so that we can use it to predit the class to which this compliant belongs to...
@@ -58,8 +51,6 @@ def main():
                 st.session_state['IT_tickets'].append(user_input)
             else:
                 st.session_state['Transport_tickets'].append(user_input)
-
-
 
 if __name__ == '__main__':
     main()

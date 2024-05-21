@@ -1,21 +1,21 @@
+import bs4
 from pypdf import PdfReader
-from langchain.text_splitter import RecursiveCharacterTextSplitter
-#from langchain.embeddings import OpenAIEmbeddings     #This import has been replaced by the below one :)
-from langchain_community.embeddings import OpenAIEmbeddings
 from langchain.embeddings.sentence_transformer import SentenceTransformerEmbeddings
-#from langchain.llms import OpenAI #This import has been replaced by the below one :)
-from langchain_openai import OpenAI
-#Pinecone team has been making a lot of changes to there code and here is how it should be used going forward :)
-from pinecone import Pinecone as PineconeClient
-#from langchain.vectorstores import Pinecone     #This import has been replaced by the below one :)
-from langchain_community.vectorstores import Pinecone
+from langchain.chains import create_history_aware_retriever, create_retrieval_chain
+from langchain.chains.combine_documents import create_stuff_documents_chain
+from langchain_chroma import Chroma
+from langchain_community.chat_message_histories import ChatMessageHistory
+from langchain_community.document_loaders import WebBaseLoader
+from langchain_core.chat_history import BaseChatMessageHistory
+from langchain_core.prompts import ChatPromptTemplate, MessagesPlaceholder
+from langchain_core.runnables.history import RunnableWithMessageHistory
+from langchain_openai import ChatOpenAI, OpenAIEmbeddings
+from langchain_text_splitters import RecursiveCharacterTextSplitter
+from langchain import HuggingFaceHub
 import pandas as pd
 from sklearn.model_selection import train_test_split
 
-
-
-
-#**********Functions to help you load documents to PINECONE************
+#********* Chroma related Functions************
 
 #Read PDF data
 def read_pdf_data(pdf_file):
@@ -27,32 +27,26 @@ def read_pdf_data(pdf_file):
 
 #Split data into chunks
 def split_data(text):
-    text_splitter = RecursiveCharacterTextSplitter(chunk_size=1000, chunk_overlap=50)
+    text_splitter = RecursiveCharacterTextSplitter(chunk_size=1000, chunk_overlap=100)
     docs = text_splitter.split_text(text)
     docs_chunks =text_splitter.create_documents(docs)
     return docs_chunks
 
-#Create embeddings instance
 def create_embeddings_load_data():
-    #embeddings = OpenAIEmbeddings()
     embeddings = SentenceTransformerEmbeddings(model_name="all-MiniLM-L6-v2")
     return embeddings
 
-#Function to push data to Pinecone
-def push_to_pinecone(pinecone_apikey,pinecone_environment,pinecone_index_name,embeddings,docs):
+#Function to push data to Chroma
+def push_to_chroma(docs, embeddings):
+    vectorstore = Chroma.from_documents(documents=docs, embedding=embeddings, persist_directory='db')
+    return vectorstore
+
+def get_retriever(vectorstore):
+    retriever = vectorstore.as_retriever(search_kwargs={"k": 2})
+    return retriever
 
 
-    PineconeClient(
-    api_key=pinecone_apikey,
-    environment=pinecone_environment, 
-    ssl_verify=False
-    )
-
-    index_name = pinecone_index_name
-    index = Pinecone.from_documents(docs, embeddings, index_name=index_name)
-    return index
-
-#*********Functions for dealing with Model related tasks...************
+#********* Model related Functions************
 
 #Read dataset for model creation
 def read_data(data):

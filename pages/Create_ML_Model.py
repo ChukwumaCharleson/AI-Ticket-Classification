@@ -1,9 +1,10 @@
 import streamlit as st
-from pages.admin_utils import *
+from pages.admin_utils2 import *
 from sklearn.svm import SVC
 from sklearn.pipeline import make_pipeline
 from sklearn.preprocessing import StandardScaler
 import joblib
+import os
 
 from pages.admin_utils import *
 
@@ -34,12 +35,8 @@ tabs = st.tabs(tab_titles)
 with tabs[0]:
     st.header('Data Preprocessing')
     st.write('Here we preprocess the data...')
-
-    # Capture the CSV file
     data = st.file_uploader("Upload CSV file",type="csv")
-
     button = st.button("Load data",key="data")
-
     if button:
         with st.spinner('Wait for it...'):
             our_data=read_data(data)
@@ -57,13 +54,7 @@ with tabs[1]:
     if button:
             with st.spinner('Wait for it...'):
                 st.session_state['sentences_train'], st.session_state['sentences_test'], st.session_state['labels_train'], st.session_state['labels_test']=split_train_test__data(st.session_state['cleaned_data'])
-                
-                # Initialize a support vector machine, with class_weight='balanced' because 
-                # our training set has roughly an equal amount of positive and negative 
-                # sentiment sentences
                 st.session_state['svm_classifier']  = make_pipeline(StandardScaler(), SVC(class_weight='balanced')) 
-
-                # fit the support vector machine
                 st.session_state['svm_classifier'].fit(st.session_state['sentences_train'], st.session_state['labels_train'])
             st.success('Done!')
 
@@ -77,24 +68,17 @@ with tabs[2]:
         with st.spinner('Wait for it...'):
             accuracy_score=get_score(st.session_state['svm_classifier'],st.session_state['sentences_test'],st.session_state['labels_test'])
             st.success(f"Validation accuracy is {100*accuracy_score}%!")
-
-
             st.write("A sample run:")
 
-
-            #text="lack of communication regarding policy updates salary, can we please look into it?"
             text="Rude driver with scary driving"
             st.write("***Our issue*** : "+text)
 
-            #Converting out TEXT to NUMERICAL representaion
             embeddings= get_embeddings()
             query_result = embeddings.embed_query(text)
 
-            #Sample prediction using our trained model
             result= st.session_state['svm_classifier'].predict([query_result])
             st.write("***Department it belongs to*** : "+result[0])
             
-
         st.success('Done!')
 
 #Save model TAB
@@ -104,7 +88,8 @@ with tabs[3]:
 
     button = st.button("Save model",key="save")
     if button:
-
         with st.spinner('Wait for it...'):
-             joblib.dump(st.session_state['svm_classifier'], 'modelsvm.pk1')
+            if os.path.exists("modelsvm.pk1"):
+                os. remove("modelsvm.pk1")
+            joblib.dump(st.session_state['svm_classifier'], 'modelsvm.pk1')
         st.success('Done!')
