@@ -9,10 +9,7 @@ from langchain.memory import ConversationBufferMemory
 from langchain.chains import ConversationalRetrievalChain
 from admin_utils import *
 import joblib
-__import__('pysqlite3')
-import sys
-import sqlite3
-sys.modules['sqlite3'] = sys.modules.pop('pysqlite3')
+
 
 def create_embedding():
     embeddings = SentenceTransformerEmbeddings(model_name="all-MiniLM-L6-v2")

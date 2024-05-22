@@ -2,21 +2,17 @@ from pypdf import PdfReader
 from langchain.embeddings.sentence_transformer import SentenceTransformerEmbeddings
 from langchain.chains import create_history_aware_retriever, create_retrieval_chain
 from langchain.chains.combine_documents import create_stuff_documents_chain
-from langchain_chroma import Chroma
+from langchain_community.vectorstores import Chroma
 from langchain_community.chat_message_histories import ChatMessageHistory
 from langchain_community.document_loaders import WebBaseLoader
 from langchain_core.chat_history import BaseChatMessageHistory
 from langchain_core.prompts import ChatPromptTemplate, MessagesPlaceholder
 from langchain_core.runnables.history import RunnableWithMessageHistory
-from langchain_openai import ChatOpenAI, OpenAIEmbeddings
 from langchain_text_splitters import RecursiveCharacterTextSplitter
 from langchain import HuggingFaceHub
 import pandas as pd
 from sklearn.model_selection import train_test_split
-__import__('pysqlite3')
-import sys
-import sqlite3
-sys.modules['sqlite3'] = sys.modules.pop('pysqlite3')
+
 
 #********* Chroma related Functions************
 
