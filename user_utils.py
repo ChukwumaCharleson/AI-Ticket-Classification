@@ -1,5 +1,4 @@
 from langchain.embeddings.sentence_transformer import SentenceTransformerEmbeddings
-from langchain_openai import OpenAI
 from langchain_community.llms import HuggingFaceEndpoint
 from langchain.schema.messages import HumanMessage as hm, SystemMessage, AIMessage
 from langchain_core.messages import HumanMessage
