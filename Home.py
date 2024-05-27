@@ -38,6 +38,7 @@ def main():
 
     st.title("AI Assistant and Ticket Classification Tool")
     st.write("By Chukwuma Charleson Onwuka")
+    st.write("Please check the 'How to Use' section in the sidebar for instructions and sample documents.")
 
     display_how_to_use()
     
